@@ -1,0 +1,58 @@
+# Docker Compose configuration
+# This makes it easy to run your app with: docker-compose up
+# 
+# Docker Compose is a tool for defining and running multi-container Docker applications.
+# Even though we only have one container, it's still useful for managing environment variables,
+# volumes, and networking.
+
+version: '3.8'
+
+services:
+  # Your BeliLite application service
+  belilite:
+    # Build the Docker image from the Dockerfile in current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Container name
+    container_name: belilite-app
+    
+    # Port mapping: host:container
+    # Access the app at http://localhost:3000
+    ports:
+      - "3000:3000"
+    
+    # Environment variables
+    # These can be set here or in a .env file
+    # For production, use docker secrets or environment variables
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_PATH=/app/data/notes.db
+      # xAI API Configuration
+      # Option 1: Uncomment and set directly (not recommended for production)
+      # - XAI_API_KEY=your-api-key-here
+      # - XAI_API_URL=https://api.x.ai/v1/chat/completions
+      # Option 2: Use .env file (recommended - see instructions below)
+      - XAI_API_KEY=${XAI_API_KEY}
+      - XAI_API_URL=${XAI_API_URL:-https://api.x.ai/v1/chat/completions}
+    
+    # Volume for persistent database storage
+    # This ensures your notes.db file persists even if container is removed
+    volumes:
+      - ./data:/app/data
+    
+    # Restart policy: restart container if it crashes
+    restart: unless-stopped
+    
+    # Health check (optional but recommended)
+    # Docker will check if the app is running properly
+    # Using node to check if server is responding
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+

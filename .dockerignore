@@ -1,0 +1,45 @@
+# Files and directories to exclude from Docker build
+# This makes the Docker image smaller and faster to build
+
+# Dependencies (will be installed in container)
+node_modules/
+npm-debug.log*
+
+# Environment files (should be passed as env vars or mounted)
+.env
+.env.local
+.env.*.local
+
+# Database files (should be in a volume or external)
+*.db
+*.sqlite
+*.sqlite3
+
+# Git files
+.git/
+.gitignore
+
+# Documentation (not needed in container)
+README.md
+TROUBLESHOOTING.md
+*.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Test files (if you add them later)
+test/
+*.test.js
+
